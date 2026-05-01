@@ -7,6 +7,12 @@ namespace AdaptiveHypertrophy.Data
     {
         private readonly DatabaseConnectionManager connectionManager;
 
+        /// <summary>Uses the shared <see cref="DatabaseConnectionManager"/> singleton.</summary>
+        public ExerciseRepository()
+            : this(DatabaseConnectionManager.GetInstance())
+        {
+        }
+
         public ExerciseRepository(DatabaseConnectionManager connectionManager)
         {
             this.connectionManager = connectionManager;

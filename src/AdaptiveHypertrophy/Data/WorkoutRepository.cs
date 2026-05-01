@@ -7,6 +7,12 @@ namespace AdaptiveHypertrophy.Data
     {
         private readonly DatabaseConnectionManager connectionManager;
 
+        /// <summary>Uses the shared <see cref="DatabaseConnectionManager"/> singleton.</summary>
+        public WorkoutRepository()
+            : this(DatabaseConnectionManager.GetInstance())
+        {
+        }
+
         public WorkoutRepository(DatabaseConnectionManager connectionManager)
         {
             this.connectionManager = connectionManager;
@@ -18,28 +24,31 @@ namespace AdaptiveHypertrophy.Data
             using var connection = connectionManager.GetConnection();
             connection.Open();
 
-            string sql = @"
+            const string sql = @"
                 INSERT INTO WorkoutLogs (ExerciseName, Weight, Reps, Sets)
                 VALUES (@ExerciseName, @Weight, @Reps, @Sets);
             ";
 
-            using var command = new SqliteCommand(sql, connection);
-            command.Parameters.AddWithValue("@ExerciseName", entity.ExerciseName);
-            command.Parameters.AddWithValue("@Weight", entity.Weight);
-            command.Parameters.AddWithValue("@Reps", entity.Reps);
-            command.Parameters.AddWithValue("@Sets", entity.Sets);
+            foreach (ExerciseEntry entry in entity.Entries)
+            {
+                using var command = new SqliteCommand(sql, connection);
+                command.Parameters.AddWithValue("@ExerciseName", entry.ExerciseName);
+                command.Parameters.AddWithValue("@Weight", entry.Weight);
+                command.Parameters.AddWithValue("@Reps", entry.Reps);
+                command.Parameters.AddWithValue("@Sets", entry.Sets);
 
-            command.ExecuteNonQuery();
+                command.ExecuteNonQuery();
+            }
         }
 
         public List<WorkoutLog> GetAll()
         {
-            List<WorkoutLog> workoutLogs = new List<WorkoutLog>();
+            var workoutLogs = new List<WorkoutLog>();
 
             using var connection = connectionManager.GetConnection();
             connection.Open();
 
-            string sql = "SELECT ExerciseName, Weight, Reps, Sets FROM WorkoutLogs;";
+            const string sql = "SELECT ExerciseName, Weight, Reps, Sets FROM WorkoutLogs ORDER BY Id;";
 
             using var command = new SqliteCommand(sql, connection);
             using var reader = command.ExecuteReader();
@@ -62,7 +71,7 @@ namespace AdaptiveHypertrophy.Data
             using var connection = connectionManager.GetConnection();
             connection.Open();
 
-            string sql = @"
+            const string sql = @"
                 CREATE TABLE IF NOT EXISTS WorkoutLogs (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     ExerciseName TEXT NOT NULL,

@@ -39,3 +39,4 @@ c:\Users\Ihate\Desktop\AdaptiveHypertrophy\src\AdaptiveHypertrophy\obj\Debug\net
 c:\Users\Ihate\Desktop\AdaptiveHypertrophy\src\AdaptiveHypertrophy\obj\Debug\net9.0\AdaptiveHypertrophy.pdb
 c:\Users\Ihate\Desktop\AdaptiveHypertrophy\src\AdaptiveHypertrophy\obj\Debug\net9.0\AdaptiveHypertrophy.genruntimeconfig.cache
 c:\Users\Ihate\Desktop\AdaptiveHypertrophy\src\AdaptiveHypertrophy\obj\Debug\net9.0\ref\AdaptiveHypertrophy.dll
+c:\Users\Ihate\Desktop\AdaptiveHypertrophy\src\AdaptiveHypertrophy\obj\Debug\net9.0\AdaptiveHypertrophy.sourcelink.json

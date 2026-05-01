@@ -2,6 +2,11 @@ namespace AdaptiveHypertrophy.Exercises;
 
 public class CompoundExercise : Exercise
 {
+    public CompoundExercise(string name, string muscleGroup)
+        : this(name, muscleGroup, baseWeight: 0, targetReps: 5, mainLift: true)
+    {
+    }
+
     public CompoundExercise(
         string name,
         string muscleGroup,
@@ -17,11 +22,11 @@ public class CompoundExercise : Exercise
 
     public override double EstimateVolume()
     {
-        throw new NotImplementedException();
+        return BaseWeight * TargetReps;
     }
 
     public override string GetExerciseType()
     {
-        throw new NotImplementedException();
+        return MainLift ? "Main Compound" : "Compound";
     }
 }
