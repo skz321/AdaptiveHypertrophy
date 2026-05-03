@@ -3,19 +3,11 @@ using AdaptiveHypertrophy.Display;
 using AdaptiveHypertrophy.Domain;
 using AdaptiveHypertrophy.Domain.Enums;
 using AdaptiveHypertrophy.Exercises;
+using AdaptiveHypertrophy.Planning;
 using AdaptiveHypertrophy.Progression;
+using AdaptiveHypertrophy.Setup;
 
 var user = User.Instance;
-user.UpdateProfile(
-    id: 1,
-    name: "Demo User",
-    age: 25,
-    bodyWeight: 80,
-    gender: "Unspecified",
-    experienceLevel: ExperienceLevel.Intermediate,
-    workoutFrequency: 4,
-    preferredSplit: "Upper/Lower",
-    goal: WorkoutGoal.Hypertrophy);
 
 IWorkoutDisplay display = new ConsoleWorkoutDisplay();
 
@@ -24,53 +16,73 @@ DatabaseConnectionManager.GetInstance().Connect();
 var exerciseRepo = new ExerciseRepository();
 var workoutRepo = new WorkoutRepository();
 
-Console.WriteLine($"{user.Name} | {user.ExperienceLevel} | {user.Goal}");
+InitialSetupFlow.RunProfilePrompts(display, user);
+InitialSetupFlow.RunMaxLiftPrompts(display, user);
+
+WorkoutPlan draftPlan = WorkoutPlanGenerator.BuildInitialPlan(user);
+WorkoutPlan acceptedPlan = InitialSetupFlow.RunPlanFeedbackLoop(display, draftPlan);
+
+Console.WriteLine("Final plan saved for this session.");
+Console.WriteLine($"{user.Name} | {user.ExperienceLevel} | {user.Goal} | {user.WorkoutFrequency}x/wk | {user.PreferredSplit}");
 Console.WriteLine();
 
-var bench = new CompoundExercise("Bench Press", "Chest", baseWeight: 185, targetReps: 5, mainLift: true);
-var curls = new IsolationExercise("Barbell Curl", "Arms", baseWeight: 50, targetReps: 12, accessoryFocus: "biceps");
+HashSet<string> savedNames = exerciseRepo.GetAll()
+    .Select(e => e.Name)
+    .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-var plan = new WorkoutPlan(
-    "Upper — strength bias",
-    new List<ExerciseEntry>
+foreach (ExerciseEntry entry in acceptedPlan.Entries)
+{
+    if (entry.LinkedExercise is null)
     {
-        new(bench.Name, Sets: 3, bench.TargetReps, bench.BaseWeight, bench),
-        new(curls.Name, Sets: 3, curls.TargetReps, curls.BaseWeight, curls),
-    });
+        continue;
+    }
 
-display.ShowWorkoutPlan(plan);
+    string n = entry.LinkedExercise.Name;
+    if (savedNames.Contains(n))
+    {
+        continue;
+    }
 
-var lastLift = new Dictionary<string, SetPerformance>(StringComparer.OrdinalIgnoreCase)
+    exerciseRepo.Save(entry.LinkedExercise);
+    savedNames.Add(n);
+}
+
+// Demo: progression preview using sample performance on the first lifts in the plan.
+var lastLift = new Dictionary<string, SetPerformance>(StringComparer.OrdinalIgnoreCase);
+foreach (ExerciseEntry entry in acceptedPlan.Entries.Take(2))
 {
-    [bench.Name] = new SetPerformance(reps: 6, weight: 185, exertion: 7),
-    [curls.Name] = new SetPerformance(reps: 13, weight: 50, exertion: 7),
-};
+    if (entry.LinkedExercise is null)
+    {
+        continue;
+    }
 
-var performances = lastLift.Values.ToList();
+    Exercise ex = entry.LinkedExercise;
+    lastLift[ex.Name] = new SetPerformance(
+        reps: entry.Reps + 1,
+        weight: entry.Weight,
+        exertion: 7);
+}
 
-Console.WriteLine("Last session performance (fed into progression):");
-display.ShowSetPerformances(performances);
-
-IProgressionStrategy progression =
-    user.Goal == WorkoutGoal.Hypertrophy
-        ? new HypertrophyProgressionStrategy()
-        : new StrengthProgressionStrategy();
-
-WorkoutPlan nextPlan = plan.ApplyProgression(lastLift, progression);
-
-Console.WriteLine("Next session targets (after adaptive progression):");
-display.ShowWorkoutPlan(nextPlan);
-
-if (exerciseRepo.GetAll().Count == 0)
+if (lastLift.Count > 0)
 {
-    exerciseRepo.Save(bench);
-    exerciseRepo.Save(curls);
+    display.ShowSetPerformances(lastLift.Values.ToList());
+
+    IProgressionStrategy progression = user.Goal switch
+    {
+        WorkoutGoal.Strength => new StrengthProgressionStrategy(),
+        _ => new HypertrophyProgressionStrategy(),
+    };
+
+    WorkoutPlan nextPlan = acceptedPlan.ApplyProgression(lastLift, progression);
+
+    Console.WriteLine("Sample next-session targets (after adaptive progression from demo performance):");
+    display.ShowWorkoutPlan(nextPlan);
 }
 
 Console.WriteLine($"SQLite: {exerciseRepo.GetAll().Count} exercise(s) in catalog, {workoutRepo.GetAll().Count} workout log row(s).");
 Console.WriteLine();
 
-Console.WriteLine("Build a quick log from console (enter numbers; blank name to finish):");
+Console.WriteLine("Optional — log a workout (enter numbers; blank exercise name to finish):");
 
 WorkoutLog createdLog = new WorkoutLog();
 while (true)

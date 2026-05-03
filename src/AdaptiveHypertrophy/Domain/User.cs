@@ -6,6 +6,8 @@ public sealed class User
 {
     private static readonly Lazy<User> LazyInstance = new(() => new User());
 
+    private readonly Dictionary<string, double> _maxLiftsByKey = new(StringComparer.OrdinalIgnoreCase);
+
     private User()
     {
     }
@@ -29,6 +31,9 @@ public sealed class User
     public string PreferredSplit { get; private set; } = string.Empty;
 
     public WorkoutGoal Goal { get; private set; }
+
+    /// <summary>1RM or best-known max (lbs) keyed by catalog exercise key (e.g. bench, squat).</summary>
+    public IReadOnlyDictionary<string, double> MaxLiftsByKey => _maxLiftsByKey;
 
     public void UpdateProfile(
         int id,
@@ -70,5 +75,22 @@ public sealed class User
         WorkoutFrequency = workoutFrequency;
         PreferredSplit = preferredSplit?.Trim() ?? string.Empty;
         Goal = goal;
+    }
+
+    public void ClearMaxLifts() => _maxLiftsByKey.Clear();
+
+    public void SetMaxLift(string exerciseKey, double maxWeight)
+    {
+        if (string.IsNullOrWhiteSpace(exerciseKey))
+        {
+            throw new ArgumentException("Exercise key is required.", nameof(exerciseKey));
+        }
+
+        if (maxWeight <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(maxWeight), "Max weight must be positive.");
+        }
+
+        _maxLiftsByKey[exerciseKey.Trim()] = maxWeight;
     }
 }

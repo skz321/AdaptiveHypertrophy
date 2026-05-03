@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\Ihate\\Desktop\\AdaptiveHypertrophy\\src\\AdaptiveHypertrophy\\AdaptiveHypertrophy.csproj": {}
+    "C:\\Users\\Ihate\\Desktop\\AdaptiveHypertrophy\\src\\AdaptiveHypertrophy\\AdaptiveHypertrophy.csproj": {}
   },
   "projects": {
-    "c:\\Users\\Ihate\\Desktop\\AdaptiveHypertrophy\\src\\AdaptiveHypertrophy\\AdaptiveHypertrophy.csproj": {
+    "C:\\Users\\Ihate\\Desktop\\AdaptiveHypertrophy\\src\\AdaptiveHypertrophy\\AdaptiveHypertrophy.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\Ihate\\Desktop\\AdaptiveHypertrophy\\src\\AdaptiveHypertrophy\\AdaptiveHypertrophy.csproj",
+        "projectUniqueName": "C:\\Users\\Ihate\\Desktop\\AdaptiveHypertrophy\\src\\AdaptiveHypertrophy\\AdaptiveHypertrophy.csproj",
         "projectName": "AdaptiveHypertrophy",
-        "projectPath": "c:\\Users\\Ihate\\Desktop\\AdaptiveHypertrophy\\src\\AdaptiveHypertrophy\\AdaptiveHypertrophy.csproj",
+        "projectPath": "C:\\Users\\Ihate\\Desktop\\AdaptiveHypertrophy\\src\\AdaptiveHypertrophy\\AdaptiveHypertrophy.csproj",
         "packagesPath": "C:\\Users\\Ihate\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\Ihate\\Desktop\\AdaptiveHypertrophy\\src\\AdaptiveHypertrophy\\obj\\",
+        "outputPath": "C:\\Users\\Ihate\\Desktop\\AdaptiveHypertrophy\\src\\AdaptiveHypertrophy\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Ihate\\AppData\\Roaming\\NuGet\\NuGet.Config",

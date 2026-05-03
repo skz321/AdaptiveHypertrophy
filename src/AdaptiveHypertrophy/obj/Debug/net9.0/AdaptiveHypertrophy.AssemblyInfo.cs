@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AdaptiveHypertrophy")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+400734aff5dc3ba9e0b2d84f2b38554d77bf3c93")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cd034110d31d21193e028ee6497454e28715a2f2")]
 [assembly: System.Reflection.AssemblyProductAttribute("AdaptiveHypertrophy")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AdaptiveHypertrophy")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
