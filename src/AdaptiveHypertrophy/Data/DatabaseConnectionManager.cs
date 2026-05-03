@@ -29,10 +29,46 @@ public sealed class DatabaseConnectionManager
     /// <summary>Creates a new connection to the shared database (caller must dispose, typically via <c>using</c>).</summary>
     public SqliteConnection GetConnection() => new(_connectionString);
 
-    /// <summary>Opens the database once to verify connectivity and create the file if needed.</summary>
+    /// <summary>Opens the database once to verify connectivity and creates tables if needed.</summary>
     public void Connect()
     {
         using var connection = GetConnection();
         connection.Open();
+
+        using var command = connection.CreateCommand();
+        command.CommandText = @"
+            CREATE TABLE IF NOT EXISTS Exercises (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Name TEXT NOT NULL UNIQUE,
+                IsCompound INTEGER NOT NULL,
+                MuscleGroup TEXT NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS WorkoutLogs (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Date TEXT NOT NULL,
+                ExerciseName TEXT NOT NULL,
+                Sets INTEGER NOT NULL,
+                Reps INTEGER NOT NULL,
+                Weight REAL NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS Users (
+                Id INTEGER PRIMARY KEY,
+                Name TEXT NOT NULL,
+                Age INTEGER NOT NULL,
+                BodyWeight REAL NOT NULL,
+                Gender TEXT NOT NULL,
+                ExperienceLevel INTEGER NOT NULL,
+                WorkoutFrequency INTEGER NOT NULL,
+                PreferredSplit TEXT NOT NULL,
+                Goal INTEGER NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS UserMaxLifts (
+                ExerciseKey TEXT PRIMARY KEY,
+                MaxWeight REAL NOT NULL
+            );";
+        command.ExecuteNonQuery();
     }
 }

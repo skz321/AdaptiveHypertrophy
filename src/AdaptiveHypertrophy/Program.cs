@@ -15,9 +15,18 @@ DatabaseConnectionManager.GetInstance().Connect();
 
 var exerciseRepo = new ExerciseRepository();
 var workoutRepo = new WorkoutRepository();
+var userRepo = new UserRepository();
 
-InitialSetupFlow.RunProfilePrompts(display, user);
-InitialSetupFlow.RunMaxLiftPrompts(display, user);
+if (!userRepo.LoadUser(user))
+{
+    InitialSetupFlow.RunProfilePrompts(display, user);
+    InitialSetupFlow.RunMaxLiftPrompts(display, user);
+    userRepo.SaveUser(user);
+}
+else
+{
+    Console.WriteLine($"Welcome back, {user.Name}!");
+}
 
 WorkoutPlan draftPlan = WorkoutPlanGenerator.BuildInitialPlan(user);
 WorkoutPlan acceptedPlan = InitialSetupFlow.RunPlanFeedbackLoop(display, draftPlan);
