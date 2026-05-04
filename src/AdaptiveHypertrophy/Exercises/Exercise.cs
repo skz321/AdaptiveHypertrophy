@@ -4,12 +4,13 @@ namespace AdaptiveHypertrophy.Exercises;
 
 public abstract class Exercise
 {
-    protected Exercise(string name, string muscleGroup, double baseWeight, int targetReps)
+    protected Exercise(string name, string muscleGroup, double baseWeight, int targetReps, string description = "")
     {
         Name = name;
         MuscleGroup = muscleGroup;
         BaseWeight = baseWeight;
         TargetReps = targetReps;
+        Description = description;
     }
 
     public string Name { get; }
@@ -20,7 +21,11 @@ public abstract class Exercise
 
     public int TargetReps { get; }
 
+    public string Description { get; }
+
     public string GetDisplayName() => Name;
+
+    public abstract string GetDescription();
 
     public abstract double EstimateVolume();
 

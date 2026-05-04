@@ -41,13 +41,15 @@ public static class WorkoutPlanWeightScaler
                 c.MuscleGroup,
                 RoundWorkingWeight(c.BaseWeight * factor),
                 c.TargetReps,
-                c.MainLift),
+                c.MainLift,
+                c.Description),
             IsolationExercise i => new IsolationExercise(
                 i.Name,
                 i.MuscleGroup,
                 RoundWorkingWeight(i.BaseWeight * factor),
                 i.TargetReps,
-                i.AccessoryFocus),
+                i.AccessoryFocus,
+                i.Description),
             _ => throw new InvalidOperationException($"Unsupported exercise type {ex.GetType().Name}."),
         };
     }
