@@ -25,14 +25,14 @@ namespace AdaptiveHypertrophy.Data
             connection.Open();
 
             string sql = @"
-                INSERT INTO Exercises (Name, MuscleGroup, ExerciseType)
-                VALUES (@Name, @MuscleGroup, @ExerciseType);
+                INSERT INTO Exercises (Name, IsCompound, MuscleGroup)
+                VALUES (@Name, @IsCompound, @MuscleGroup);
             ";
 
             using var command = new SqliteCommand(sql, connection);
             command.Parameters.AddWithValue("@Name", entity.Name);
-            command.Parameters.AddWithValue("@MuscleGroup", entity.MuscleGroup.ToString());
-            command.Parameters.AddWithValue("@ExerciseType", entity.GetType().Name);
+            command.Parameters.AddWithValue("@IsCompound", entity is CompoundExercise ? 1 : 0);
+            command.Parameters.AddWithValue("@MuscleGroup", entity.MuscleGroup);
 
             command.ExecuteNonQuery();
         }
@@ -44,7 +44,7 @@ namespace AdaptiveHypertrophy.Data
             using var connection = connectionManager.GetConnection();
             connection.Open();
 
-            string sql = "SELECT Name, MuscleGroup, ExerciseType FROM Exercises;";
+            string sql = "SELECT Name, MuscleGroup, IsCompound FROM Exercises;";
 
             using var command = new SqliteCommand(sql, connection);
             using var reader = command.ExecuteReader();
@@ -53,9 +53,9 @@ namespace AdaptiveHypertrophy.Data
             {
                 string name = reader.GetString(0);
                 string muscleGroup = reader.GetString(1);
-                string exerciseType = reader.GetString(2);
+                bool isCompound = reader.GetInt32(2) != 0;
 
-                if (exerciseType == "CompoundExercise")
+                if (isCompound)
                 {
                     exercises.Add(new CompoundExercise(name, muscleGroup));
                 }
@@ -76,9 +76,9 @@ namespace AdaptiveHypertrophy.Data
             string sql = @"
                 CREATE TABLE IF NOT EXISTS Exercises (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Name TEXT NOT NULL,
-                    MuscleGroup TEXT NOT NULL,
-                    ExerciseType TEXT NOT NULL
+                    Name TEXT NOT NULL UNIQUE,
+                    IsCompound INTEGER NOT NULL,
+                    MuscleGroup TEXT NOT NULL
                 );
             ";
 
