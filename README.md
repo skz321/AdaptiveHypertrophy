@@ -117,8 +117,7 @@ Final diagram(s) live under **`uml/`**:
 | File | Contents |
 |------|----------|
 | `uml/class-diagram.puml` | PlantUML class diagram — classes, key members, relationships, Strategy / Repository / Singleton collaborators. |
-
-Render with PlantUML to **PNG** or **PDF** if your instructor requires non-PUML formats; the **`.puml`** source matches the implementation.
+| `uml/class-diagram.png` | Rendered png of above PlantUML class diagram.|
 
 ---
 
@@ -134,7 +133,3 @@ Render with PlantUML to **PNG** or **PDF** if your instructor requires non-PUML 
 The solution file `AdaptiveHypertrophy.slnx` at the repo root is optional tooling; **`dotnet`** commands in section 2 use the **`.csproj`** under `src/`, sufficient for a clean build from only `/src` sources.
 
 ---
-
-## 8. Individual Reflection
-
-Each team member must submit the course **Individual Reflection & OPP Showcase** Google Form separately from the team ZIP (see course Canvas).
