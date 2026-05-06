@@ -1,0 +1,145 @@
+@startuml AdaptiveHypertrophy_ClassDiagram
+skinparam classAttributeIconSize 0
+top to bottom direction
+
+package "Domain" {
+  class User <<sealed>> {
+    - {static} Lazy<User> LazyInstance
+    - Dictionary<string,double> _maxLiftsByKey
+    --
+    + {static} Instance : User
+    + UpdateProfile(...)
+    + SetMaxLift(key, maxWeight)
+  }
+
+  class WorkoutPlan <<sealed>> {
+    + Name : string
+    + Entries : List<ExerciseEntry>
+    + ApplyProgression(last, IProgressionStrategy) : WorkoutPlan
+  }
+
+  class ExerciseEntry <<record>> {
+    ExerciseName, Sets, Reps, Weight
+    LinkedExercise : Exercise?
+  }
+
+  class WorkoutLog {
+    + Entries : List<ExerciseEntry>
+  }
+
+  class SetPerformance <<readonly struct>> {
+    + Reps, Weight, Exertion : int/double
+  }
+
+  enum ExperienceLevel
+  enum WorkoutGoal
+}
+
+package "Exercises" {
+  abstract class Exercise {
+    # Exercise(name, muscleGroup, baseWeight, targetReps, description)
+    + Name, MuscleGroup, BaseWeight, TargetReps, Description
+    + {abstract} GetDescription()
+    + {abstract} EstimateVolume()
+    + {abstract} GetExerciseType()
+  }
+
+  class CompoundExercise
+  class IsolationExercise
+}
+
+package "Progression" {
+  interface IProgressionStrategy {
+    + CalculateNextWeight(Exercise, SetPerformance) : double
+    + CalculateNextReps(Exercise, SetPerformance) : int
+  }
+
+  class HypertrophyProgressionStrategy
+  class StrengthProgressionStrategy
+}
+
+package "Display" {
+  interface IWorkoutDisplay {
+    + ShowWorkoutPlan(WorkoutPlan)
+    + GetInput(prompt) : string
+    ..
+  }
+
+  class ConsoleWorkoutDisplay <<sealed>>
+}
+
+package "Data" {
+  interface IRepository<T> {
+    + Save(T)
+    + GetAll() : List<T>
+  }
+
+  class ExerciseRepository {
+    - DatabaseConnectionManager connectionManager
+  }
+
+  class WorkoutRepository {
+    - DatabaseConnectionManager connectionManager
+  }
+
+  class UserRepository
+
+  class DatabaseConnectionManager <<sealed>> <<Singleton>> {
+    - {static} Lazy<DatabaseConnectionManager> LazyInstance
+    - {static} GetInstance() : DatabaseConnectionManager
+    + GetConnection() : SqliteConnection
+    + Connect()
+  }
+}
+
+package "Planning" {
+  class WorkoutPlanGenerator <<static>>
+  class WorkoutPlanWeightScaler <<static>>
+  class ExerciseCatalog <<static>>
+}
+
+package "Setup" {
+  class InitialSetupFlow <<static>>
+}
+
+Exercise <|-- CompoundExercise
+Exercise <|-- IsolationExercise
+IProgressionStrategy <|.. HypertrophyProgressionStrategy
+IProgressionStrategy <|.. StrengthProgressionStrategy
+IWorkoutDisplay <|.. ConsoleWorkoutDisplay
+IRepository <|.. ExerciseRepository : Exercise
+IRepository <|.. WorkoutRepository : WorkoutLog
+
+WorkoutPlan o-- "many" ExerciseEntry
+WorkoutLog o-- "many" ExerciseEntry
+ExerciseEntry --> "0..1" Exercise : LinkedExercise
+
+WorkoutPlan ..> IProgressionStrategy : uses in ApplyProgression
+ExerciseRepository --> DatabaseConnectionManager : uses
+WorkoutRepository --> DatabaseConnectionManager : uses
+UserRepository --> DatabaseConnectionManager : uses
+
+HypertrophyProgressionStrategy ..> Exercise
+StrengthProgressionStrategy ..> Exercise
+HypertrophyProgressionStrategy ..> SetPerformance
+
+WorkoutPlanGenerator ..> User
+WorkoutPlanGenerator ..> WorkoutPlan
+InitialSetupFlow ..> IWorkoutDisplay
+InitialSetupFlow ..> User
+InitialSetupFlow ..> WorkoutPlan
+
+note right of DatabaseConnectionManager
+  Creational: Singleton
+  (lazy holder)
+end note
+
+note bottom of IProgressionStrategy
+  Behavioral: Strategy
+end note
+
+note bottom of IRepository
+  Repository abstraction
+end note
+
+@enduml

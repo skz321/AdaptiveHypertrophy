@@ -44,15 +44,6 @@ public sealed class DatabaseConnectionManager
                 MuscleGroup TEXT NOT NULL
             );
 
-            CREATE TABLE IF NOT EXISTS WorkoutLogs (
-                Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                Date TEXT NOT NULL,
-                ExerciseName TEXT NOT NULL,
-                Sets INTEGER NOT NULL,
-                Reps INTEGER NOT NULL,
-                Weight REAL NOT NULL
-            );
-
             CREATE TABLE IF NOT EXISTS Users (
                 Id INTEGER PRIMARY KEY,
                 Name TEXT NOT NULL,
