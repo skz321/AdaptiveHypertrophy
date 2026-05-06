@@ -82,7 +82,7 @@
 
 ## 4. Design Patterns (with File & Line References)
 
-This project documents **three standard patterns** spanning **three categories** (Creational, Behavioral, Structural), satisfying the “≥2 different categories” rule. Two are classic **Gang of Four** patterns (**Singleton**, **Strategy**); the third is the widely published **Repository** pattern ([P of EAA — Repository](https://martinfowler.com/eaaCatalog/repository.html)), which many OOP courses group under **Structural / data-access** design.
+This project documents **three standard patterns** spanning **three categories** (Creational, Behavioral, Structural), satisfying the “≥2 different categories” rule. These patterns are *Singleton*, *Strategy*, and *Repository*.
 
 | Pattern | Category | File | Line(s) | Rationale |
 |---------|----------|------|---------|-----------|
